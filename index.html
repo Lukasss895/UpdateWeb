@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GO:CR - Project Launcher</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #1b2838;
+            color: #c7d5e0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+            background-image: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('background.jpg'); /* Ak máš pozadie, môžeš ho sem dať */
+            background-size: cover;
+            background-position: center;
+        }
+
+        .container {
+            background: rgba(22, 32, 46, 0.9);
+            border: 1px solid #2a475e;
+            border-radius: 12px;
+            padding: 40px;
+            text-align: center;
+            max-width: 500px;
+            width: 100%;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        h1 {
+            color: #ffffff;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        p {
+            color: #8f98a0;
+            margin-bottom: 30px;
+            font-size: 1rem;
+        }
+
+        .download-btn {
+            display: inline-block;
+            background: linear-gradient(to bottom, #417a9b 0%, #2e5972 100%);
+            color: #ffffff;
+            padding: 15px 35px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            text-decoration: none;
+            border-radius: 4px;
+            border: 1px solid #5a9bc2;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        }
+
+        .download-btn:hover {
+            background: linear-gradient(to bottom, #4e91b8ch 0%, #376885 100%);
+            background-color: #4e91b8;
+            border-color: #7ab8e0;
+            box-shadow: 0 6px 15px rgba(65, 122, 155, 0.4);
+            transform: translateY(-2px);
+        }
+
+        .footer {
+            margin-top: 30px;
+            font-size: 0.8rem;
+            color: #56708a;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>GO:CR Launcher</h1>
+        <p>The ultimate industrial experience. Download the official launcher to start playing.</p>
+        
+        <!-- Sem potom nahradíš odkaz na stiahnutie tvojho launchera alebo zipu -->
+        <a href="https://github.com/TVOJE_MENO/TVOJ_REPOZITAR/releases/latest" class="download-btn">DOWNLOAD LAUNCHER</a>
+        
+        <div class="footer">
+            &copy; 2026 GO:CR Project. All rights reserved.
+        </div>
+    </div>
+
+</body>
+</html>
