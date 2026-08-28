@@ -1,6 +1,13 @@
 {
+  "name": "csgo-discord-bot",
+  "version": "1.0.0",
+  "description": "Discord bot for CS:GO server status and welcome messages",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
   "dependencies": {
-    "discord.js": "^14.27.0",
-    "gamedig": "^5.3.3"
+    "discord.js": "^14.14.1",
+    "gamedig": "^4.3.3"
   }
 }
