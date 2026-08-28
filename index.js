@@ -17,7 +17,8 @@ const WELCOME_CHANEL_ID2 = '1539662948157624320';
 
 const servers = [
     { name: 'Server #1 (128-Tick)', host: '147.185.221.231', port: 42131 },
-    { name: 'Server #2 (64-Tick)', host: '147.185.221.231', port: 42183 }
+    { name: 'Server #2 (64-Tick)', host: '147.185.221.231', port: 42183 },
+    { name: 'GO:COUNTER Retakes (128-Tick)', host: '147.185.221.231', port: 42200 } // <-- Nová sekcia pre Retakes
 ];
 
 client.once('ready', () => {
