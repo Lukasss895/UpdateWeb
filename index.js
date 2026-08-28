@@ -1,5 +1,6 @@
 ﻿const { Client, GatewayIntentBits, EmbedBuilder } = require('discord.js');
 const { GameDig } = require('gamedig');
+const http = require('http'); // DÔLEŽITÉ: Musí tu byť http modul
 
 const client = new Client({
     intents: [
@@ -8,7 +9,7 @@ const client = new Client({
     ]
 });
 
-const TOKEN = process.env.name_variable';
+const TOKEN = process.env.name_variable;
 const CHANNEL_ID = '1533114605562495128';
 const CHANNEL_ID_2 = '1537207330310070392';
 const WELCOME_CHANNEL_ID = '1539635519359549574'; // Špeciálny kanál pre privítanie nových hráčov
@@ -32,7 +33,7 @@ client.on('guildMemberAdd', async (member) => {
 
         const welcomeEmbed = new EmbedBuilder()
             .setTitle(`👋 Welcome ${member.user.username}!`)
-            .setDescription(`Welcome to the server! We're glad to join GO:Counter community.\n\nDon't forget to check the server status and set up your skins using the \`!ws\``) // OPRAVENÉ: pridaná spätná úvodzovka a zatváramá zátvorka
+            .setDescription(`Welcome to the server! We're glad to join GO:Counter community.\n\nDon't forget to check the server status and set up your skins using the \`!ws\``)
             .setColor('#2ecc71')
             .setTimestamp();
 
@@ -98,5 +99,12 @@ async function updateServerStatus() {
         }
     }
 }
+
+// DÔLEŽITÉ: HTTP server pre Render, aby služba nespadla
+const server = http.createServer((req, res) => {
+    res.writeHead(200, { 'Content-Type': 'text/plain' });
+    res.end('Bot is alive!');
+});
+server.listen(process.env.PORT || 3000);
 
 client.login(TOKEN);
