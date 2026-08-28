@@ -8,7 +8,7 @@ const client = new Client({
     ]
 });
 
-const TOKEN = 'process.env.name_variable;
+const TOKEN = process.env.name_variable';
 const CHANNEL_ID = '1533114605562495128';
 const CHANNEL_ID_2 = '1537207330310070392';
 const WELCOME_CHANNEL_ID = '1539635519359549574'; // Špeciálny kanál pre privítanie nových hráčov
