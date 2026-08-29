@@ -1,24 +1,24 @@
 ﻿const { Client, GatewayIntentBits, EmbedBuilder } = require('discord.js');
 const { GameDig } = require('gamedig');
-const http = require('http'); // DÔLEŽITÉ: Musí tu byť http modul
+const http = require('http');
 
 const client = new Client({
     intents: [
         GatewayIntentBits.Guilds,
-        GatewayIntentBits.GuildMembers // Required to detect new members joining
+        GatewayIntentBits.GuildMembers
     ]
 });
 
-const TOKEN = process.env.name_variable;
+const TOKEN = process.env.DISCORD_TOKEN; // Opravené na správny názov premennej
 const CHANNEL_ID = '1533114605562495128';
 const CHANNEL_ID_2 = '1537207330310070392';
-const WELCOME_CHANNEL_ID = '1539635519359549574'; // Špeciálny kanál pre privítanie nových hráčov
+const WELCOME_CHANNEL_ID = '1539635519359549574';
 const WELCOME_CHANEL_ID2 = '1539662948157624320';
 
 const servers = [
     { name: 'GO:COUNTER (128-Tick)', host: '147.185.221.231', port: 42131 },
-    { name: 'GO:COUNTER Retakes (128-Tick)', host: '147.185.221.231', port: 27068 }
-    { name: 'GO:COUNTER Hide & Seek', host: '147.185.221.231', port: 42183}
+    { name: 'GO:COUNTER Retakes (128-Tick)', host: '147.185.221.231', port: 27068 }, // <--- TU CHÝBALA ČIARKA
+    { name: 'GO:COUNTER Hide & Seek', host: '147.185.221.231', port: 42183 }
 ];
 
 client.once('ready', () => {
@@ -26,7 +26,6 @@ client.once('ready', () => {
     setInterval(updateServerStatus, 30000);
 });
 
-// Automatic welcome message for new players in English
 client.on('guildMemberAdd', async (member) => {
     try {
         const channel = await client.channels.fetch(WELCOME_CHANNEL_ID);
@@ -58,7 +57,7 @@ async function updateServerStatus() {
                 socketTimeout: 3000
             });
         } catch (error) {
-            // Silently catch errors for Non-Steam server to avoid console spam
+            // Silently catch errors
         }
 
         if (state) {
@@ -101,7 +100,6 @@ async function updateServerStatus() {
     }
 }
 
-// DÔLEŽITÉ: HTTP server pre Render, aby služba nespadla
 const server = http.createServer((req, res) => {
     res.writeHead(200, { 'Content-Type': 'text/plain' });
     res.end('Bot is alive!');
