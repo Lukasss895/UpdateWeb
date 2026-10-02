@@ -1,4 +1,4 @@
-﻿const { Client, GatewayIntentBits, EmbedBuilder } = require('discord.js');
+const { Client, GatewayIntentBits, EmbedBuilder } = require('discord.js');
 const { GameDig } = require('gamedig');
 const http = require('http');
 
@@ -9,7 +9,7 @@ const client = new Client({
     ]
 });
 
-const TOKEN = process.env.DISCORD_TOKEN; // Opravené na správny názov premennej
+const TOKEN = process.env.DISCORD_TOKEN; 
 const CHANNEL_ID = '1533114605562495128';
 const CHANNEL_ID_2 = '1537207330310070392';
 const WELCOME_CHANNEL_ID = '1539635519359549574';
@@ -17,8 +17,8 @@ const WELCOME_CHANEL_ID2 = '1539662948157624320';
 
 const servers = [
     { name: 'GO:COUNTER (128-Tick)', host: '147.185.221.231', port: 42131 },
-    { name: 'GO:COUNTER Retakes (128-Tick)', host: '147.185.221.231', port: 27068 }, // <--- TU CHÝBALA ČIARKA
-    { name: 'GO:COUNTER Hide & Seek', host: '147.185.221.231', port: 42183 }
+    { name: 'GO:COUNTER Retakes (128-Tick)', host: '147.185.221.231', port: 27068 },
+    { name: 'GO:COUNTER Hide & Seek / Wingman', host: '147.185.221.231', port: 42183 }
 ];
 
 client.once('ready', () => {
