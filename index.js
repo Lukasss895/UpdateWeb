@@ -23,6 +23,7 @@ const servers = [
 
 client.once('ready', () => {
     console.log(`Bot is logged in as ${client.user.tag}!`);
+    updateServerStatus(); // Spustíme hneď po štarte
     setInterval(updateServerStatus, 30000);
 });
 
@@ -33,7 +34,7 @@ client.on('guildMemberAdd', async (member) => {
 
         const welcomeEmbed = new EmbedBuilder()
             .setTitle(`👋 Welcome ${member.user.username}!`)
-            .setDescription(`Welcome to the server! We're glad to join GO:Counter community.\n\nDon't forget to check the server status and set up your skins in inventory Enjoy😊)
+            .setDescription(`Welcome to the server! We're glad to join GO:Counter community.\n\nDon't forget to check the server status and set up your skins in inventory. Enjoy😊`)
             .setColor('#2ecc71')
             .setTimestamp();
 
@@ -75,7 +76,7 @@ async function updateServerStatus() {
 
     const embed = new EmbedBuilder()
         .setTitle('📊 CS:GO 2015 - Server Status')
-        .setDescription(description)
+        .setDescription(description || 'No status available.')
         .setColor('#4a90e2')
         .setTimestamp();
 
@@ -100,10 +101,19 @@ async function updateServerStatus() {
     }
 }
 
+// HTTP Server pre Railway web service health check
+const port = process.env.PORT || 3000;
 const server = http.createServer((req, res) => {
     res.writeHead(200, { 'Content-Type': 'text/plain' });
     res.end('Bot is alive!');
 });
-server.listen(process.env.PORT || 3000);
 
-client.login(TOKEN);
+server.listen(port, () => {
+    console.log(`HTTP Web Server listening on port ${port}`);
+});
+
+if (!TOKEN) {
+    console.error('ERROR: DISCORD_TOKEN is missing in environment variables!');
+} else {
+    client.login(TOKEN);
+}
