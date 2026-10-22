@@ -16,9 +16,9 @@ const WELCOME_CHANNEL_ID = '1539635519359549574';
 const WELCOME_CHANEL_ID2 = '1539662948157624320';
 
 const servers = [
-    { name: 'GO:COUNTER (128-Tick)', host: '147.185.221.215', port: 45492 },
-    { name: 'GO:COUNTER Retakes (128-Tick)', host: '147.185.221.231', port: 27068 },
-    { name: 'GO:COUNTER Wingman', host: '147.185.221.231', port: 42183 }
+    { name: 'GO:COUNTER Competitive (128-Tick)', host: '147.185.221.215', port: 40471 },
+    { name: 'GO:COUNTER Retakes (128-Tick)', host: '147.185.221.214', port: 33187 },
+    { name: 'GO:COUNTER Wingman', host: '147.185.221.213', port: 6469 }
 ];
 
 client.once('ready', () => {
@@ -33,7 +33,7 @@ client.on('guildMemberAdd', async (member) => {
 
         const welcomeEmbed = new EmbedBuilder()
             .setTitle(`👋 Welcome ${member.user.username}!`)
-            .setDescription(`Welcome to the server! We're glad to join GO:Counter community.\n\nDon't forget to check the server status and set up your skins using the \`!ws\``)
+            .setDescription(`Welcome to the server! We're glad to join GO:Counter community.\n\nDon't forget to check the server status and set up your skins in inventory Enjoy😊)
             .setColor('#2ecc71')
             .setTimestamp();
 
