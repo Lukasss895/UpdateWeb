@@ -9,7 +9,7 @@ const client = new Client({
     ]
 });
 
-const TOKEN = process.env.DISCORD_TOKEN; 
+const TOKEN = process.env.DISCORD_TOKEN 1d0731f8e1f9f7ed98a96e746839f56ec500c40b18a3fdb01b9d9aab4d155062; 
 const CHANNEL_ID = '1533114605562495128';
 const CHANNEL_ID_2 = '1537207330310070392';
 const WELCOME_CHANNEL_ID = '1539635519359549574';
