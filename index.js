@@ -1,5 +1,5 @@
 const { Client, GatewayIntentBits, EmbedBuilder } = require('discord.js');
-const Gamedig = require('gamedig');
+const dgram = require('dgram');
 const http = require('http');
 
 const client = new Client({
@@ -15,11 +15,11 @@ const CHANNEL_ID_2 = '1537207330310070392';
 const WELCOME_CHANNEL_ID = '1539635519359549574';
 const WELCOME_CHANEL_ID2 = '1539662948157624320';
 
+// Tvoje servery (môžeš použiť playit.gg adresy alebo priame IP s portami)
 const servers = [
     { name: 'GO:COUNTER Competitive (128-Tick)', host: '147.185.221.215', port: 40471 },
     { name: 'GO:COUNTER Retakes', host: '147.185.221.214', port: 33187 },
-    { name: 'GO:COUNTER Wingman', host: '147.185.221.213', port: 6469 },
-    { name: 'Test Public Server', host: '155.138.232.189', port: 27015 } // Testovací server na overenie GameDig
+    { name: 'GO:COUNTER Wingman', host: '147.185.221.213', port: 6469 }
 ];
 
 client.once('ready', () => {
@@ -45,31 +45,98 @@ client.on('guildMemberAdd', async (member) => {
     }
 });
 
+// Čistá A2S query funkcia cez UDP socket (bez GameDig)
+function querySourceServer(host, port, timeout = 4000) {
+    return new Promise((resolve, reject) => {
+        const socket = dgram.createSocket('udp4');
+        let timer = setTimeout(() => {
+            socket.close();
+            reject(new Error('Timeout'));
+        }, timeout);
+
+        // A2S_INFO request packet: 0xFFFFFFFF + 'T' + 'Source Engine Query\0'
+        const payload = Buffer.concat([
+            Buffer.from([0xFF, 0xFF, 0xFF, 0xFF, 0x54]),
+            Buffer.from('Source Engine Query\0', 'binary')
+        ]);
+
+        socket.on('message', (msg) => {
+            if (msg.length < 5) return;
+            const header = msg.readUInt8(4);
+
+            if (header === 0x41) { 
+                // Ak server vyžaduje challenge token, pošleme ho naspäť s požiadavkou
+                const challenge = msg.slice(5, 9);
+                const challengePayload = Buffer.concat([
+                    Buffer.from([0xFF, 0xFF, 0xFF, 0xFF, 0x54]),
+                    Buffer.from('Source Engine Query\0', 'binary'),
+                    challenge
+                ]);
+                socket.send(challengePayload, port, host);
+            } else if (header === 0x49) { 
+                // Úspešná odpoveď (A2S_INFO response)
+                clearTimeout(timer);
+                socket.close();
+
+                try {
+                    let offset = 5;
+                    const protocol = msg.readUInt8(offset++);
+
+                    // Pomocná funkcia na čítanie null-terminated stringov
+                    function readString() {
+                        let end = offset;
+                        while (end < msg.length && msg[end] !== 0) end++;
+                        const str = msg.toString('utf8', offset, end);
+                        offset = end + 1;
+                        return str;
+                    }
+
+                    const name = readString();
+                    const map = readString();
+                    const folder = readString();
+                    const game = readString();
+                    const id = msg.readUInt16LE(offset); offset += 2;
+                    const players = msg.readUInt8(offset++);
+                    const maxplayers = msg.readUInt8(offset++);
+                    const bots = msg.readUInt8(offset++);
+
+                    resolve({
+                        name,
+                        map,
+                        players,
+                        maxplayers
+                    });
+                } catch (e) {
+                    reject(e);
+                }
+            }
+        });
+
+        socket.send(payload, port, host, (err) => {
+            if (err) {
+                clearTimeout(timer);
+                socket.close();
+                reject(err);
+            }
+        });
+    });
+}
+
 async function updateServerStatus() {
     let description = '';
 
     for (const srv of servers) {
         let state = null;
         try {
-            state = await Gamedig.query({
-                type: 'cs2', // Používame cs2 protokol pre moderné servery
-                host: srv.host,
-                port: srv.port,
-                maxAttempts: 3,
-                socketTimeout: 5000
-            });
+            state = await querySourceServer(srv.host, srv.port);
         } catch (error) {
-            console.error(`GameDig error for ${srv.name} (${srv.host}:${srv.port}):`, error.message);
+            console.error(`UDP query error for ${srv.name} (${srv.host}:${srv.port}):`, error.message);
         }
 
         if (state) {
-            const playerCount = state.raw && state.raw.numplayers !== undefined 
-                ? state.raw.numplayers 
-                : (state.players ? state.players.length : 0);
-
             description += `🟢 **${srv.name}**\n`;
             description += `> **Map:** ${state.map || 'Unknown'}\n`;
-            description += `> **Players:** ${playerCount} / ${state.maxplayers || 0}\n`;
+            description += `> **Players:** ${state.players} / ${state.maxplayers}\n`;
             description += `**IP:** \`connect ${srv.host}:${srv.port}\`\n\n`;
         } else {
             description += `🔴 **${srv.name}**\n`;
@@ -104,7 +171,7 @@ async function updateServerStatus() {
     }
 }
 
-// HTTP Server pre Render web service health check
+// HTTP Server pre Render / Railway health check
 const port = process.env.PORT || 3000;
 const server = http.createServer((req, res) => {
     res.writeHead(200, { 'Content-Type': 'text/plain' });
