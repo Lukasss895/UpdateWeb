@@ -23,7 +23,7 @@ const servers = [
 
 client.once('ready', () => {
     console.log(`Bot is logged in as ${client.user.tag}!`);
-    updateServerStatus(); // Spustíme hneď po štarte
+    updateServerStatus();
     setInterval(updateServerStatus, 30000);
 });
 
@@ -58,15 +58,17 @@ async function updateServerStatus() {
                 socketTimeout: 3000
             });
         } catch (error) {
-            // Silently catch errors
+            // Server neodpovedá alebo je offline
         }
 
         if (state) {
-            const playerCount = state.numplayers !== undefined ? state.numplayers : (state.players ? state.players.length : 0);
+            const playerCount = state.players ? state.players.length : (state.numplayers || 0);
+            const maxPlayers = state.maxplayers || 0;
+            const mapName = state.map || 'unknown';
 
             description += `🟢 **${srv.name}**\n`;
-            description += `> **Map:** ${state.map}\n`;
-            description += `> **Players:** ${playerCount} / ${state.maxplayers}\n`;
+            description += `> **Map:** ${mapName}\n`;
+            description += `> **Players:** ${playerCount} / ${maxPlayers}\n`;
             description += `**IP:** \`connect ${srv.host}:${srv.port}\`\n\n`;
         } else {
             description += `🔴 **${srv.name}**\n`;
@@ -101,7 +103,7 @@ async function updateServerStatus() {
     }
 }
 
-// HTTP Server pre Render/Railway web service health check
+// HTTP Server pre Render web service health check
 const port = process.env.PORT || 3000;
 const server = http.createServer((req, res) => {
     res.writeHead(200, { 'Content-Type': 'text/plain' });
