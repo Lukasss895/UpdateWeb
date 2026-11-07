@@ -54,19 +54,21 @@ async function updateServerStatus() {
                 type: 'csgo',
                 host: srv.host,
                 port: srv.port,
-                maxAttempts: 2,
-                socketTimeout: 3000
+                maxAttempts: 3,
+                socketTimeout: 5000
             });
         } catch (error) {
-            // Server neodpovedá alebo je offline
+            console.error(`GameDig error for ${srv.name} (${srv.host}:${srv.port}):`, error.message);
         }
 
         if (state) {
-            const playerCount = state.raw && state.raw.numplayers !== undefined ? state.raw.numplayers : (state.players ? state.players.length : 0);
+            const playerCount = state.raw && state.raw.numplayers !== undefined 
+                ? state.raw.numplayers 
+                : (state.players ? state.players.length : 0);
 
             description += `🟢 **${srv.name}**\n`;
-            description += `> **Map:** ${state.map}\n`;
-            description += `> **Players:** ${playerCount} / ${state.maxplayers}\n`;
+            description += `> **Map:** ${state.map || 'Unknown'}\n`;
+            description += `> **Players:** ${playerCount} / ${state.maxplayers || 0}\n`;
             description += `**IP:** \`connect ${srv.host}:${srv.port}\`\n\n`;
         } else {
             description += `🔴 **${srv.name}**\n`;
