@@ -9,7 +9,7 @@ const client = new Client({
     ]
 });
 
-const TOKEN = process.env.DISCORD_TOKEN 1d0731f8e1f9f7ed98a96e746839f56ec500c40b18a3fdb01b9d9aab4d155062; 
+const TOKEN = process.env.DISCORD_TOKEN; 
 const CHANNEL_ID = '1533114605562495128';
 const CHANNEL_ID_2 = '1537207330310070392';
 const WELCOME_CHANNEL_ID = '1539635519359549574';
@@ -17,7 +17,7 @@ const WELCOME_CHANEL_ID2 = '1539662948157624320';
 
 const servers = [
     { name: 'GO:COUNTER Competitive (128-Tick)', host: '147.185.221.215', port: 40471 },
-    { name: 'GO:COUNTER Retakes (128-Tick)', host: '147.185.221.214', port: 33187 },
+    { name: 'GO:COUNTER Retakes', host: '147.185.221.214', port: 33187 },
     { name: 'GO:COUNTER Wingman', host: '147.185.221.213', port: 6469 }
 ];
 
@@ -75,7 +75,7 @@ async function updateServerStatus() {
     }
 
     const embed = new EmbedBuilder()
-        .setTitle('📊 CS:GO 2015 - Server Status')
+        .setTitle('📊 GO:COUNTER - Server Status')
         .setDescription(description || 'No status available.')
         .setColor('#4a90e2')
         .setTimestamp();
@@ -101,7 +101,7 @@ async function updateServerStatus() {
     }
 }
 
-// HTTP Server pre Railway web service health check
+// HTTP Server pre Render/Railway web service health check
 const port = process.env.PORT || 3000;
 const server = http.createServer((req, res) => {
     res.writeHead(200, { 'Content-Type': 'text/plain' });
