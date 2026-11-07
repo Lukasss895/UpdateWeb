@@ -15,11 +15,9 @@ const CHANNEL_ID_2 = '1537207330310070392';
 const WELCOME_CHANNEL_ID = '1539635519359549574';
 const WELCOME_CHANEL_ID2 = '1539662948157624320';
 
-// Tvoje servery (môžeš použiť playit.gg adresy alebo priame IP s portami)
+// Testujeme iba jeden lokálny server
 const servers = [
-    { name: 'GO:COUNTER Competitive (128-Tick)', host: '147.185.221.215', port: 40471 },
-    { name: 'GO:COUNTER Retakes', host: '147.185.221.214', port: 33187 },
-    { name: 'GO:COUNTER Wingman', host: '147.185.221.213', port: 6469 }
+    { name: 'GO:COUNTER Competitive (128-Tick)', host: '192.168.50.169', port: 40471 }
 ];
 
 client.once('ready', () => {
@@ -45,7 +43,7 @@ client.on('guildMemberAdd', async (member) => {
     }
 });
 
-// Robustná A2S query funkcia cez UDP socket s podrobným logovaním
+// A2S query funkcia cez UDP socket
 function querySourceServer(host, port, timeout = 5000) {
     return new Promise((resolve, reject) => {
         const socket = dgram.createSocket('udp4');
@@ -54,7 +52,6 @@ function querySourceServer(host, port, timeout = 5000) {
             reject(new Error('Timeout - Server neodpovedal v limite 5s'));
         }, timeout);
 
-        // Štandardný A2S_INFO query paket pre Source servery
         const payload = Buffer.concat([
             Buffer.from([0xFF, 0xFF, 0xFF, 0xFF, 0x54]),
             Buffer.from('Source Engine Query\0', 'ascii')
@@ -66,17 +63,15 @@ function querySourceServer(host, port, timeout = 5000) {
 
             try {
                 if (msg.length < 5) {
-                    return reject(new Error('Príliš krátka odpoveď zo servera (dĺžka < 5 bajtov)'));
+                    return reject(new Error('Príliš krátka odpoveď zo servera'));
                 }
 
                 const header = msg.readUInt8(4);
 
-                // Ak server žiada challenge token (0x41)
                 if (header === 0x41) {
                     return reject(new Error('Server vyžaduje challenge token (0x41)'));
                 }
 
-                // Ak je hlavička 0x49 (I - A2S_INFO Response)
                 if (header === 0x49) {
                     let offset = 5;
                     const protocol = msg.readUInt8(offset++);
@@ -173,7 +168,6 @@ async function updateServerStatus() {
     }
 }
 
-// HTTP Server pre Railway / Render health check
 const port = process.env.PORT || 3000;
 const server = http.createServer((req, res) => {
     res.writeHead(200, { 'Content-Type': 'text/plain' });
