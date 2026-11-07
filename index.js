@@ -45,44 +45,42 @@ client.on('guildMemberAdd', async (member) => {
     }
 });
 
-// Čistá A2S query funkcia cez UDP socket (bez GameDig)
-function querySourceServer(host, port, timeout = 4000) {
+// Robustná A2S query funkcia cez UDP socket s podrobným logovaním
+function querySourceServer(host, port, timeout = 5000) {
     return new Promise((resolve, reject) => {
         const socket = dgram.createSocket('udp4');
         let timer = setTimeout(() => {
             socket.close();
-            reject(new Error('Timeout'));
+            reject(new Error('Timeout - Server neodpovedal v limite 5s'));
         }, timeout);
 
-        // A2S_INFO request packet: 0xFFFFFFFF + 'T' + 'Source Engine Query\0'
+        // Štandardný A2S_INFO query paket pre Source servery
         const payload = Buffer.concat([
             Buffer.from([0xFF, 0xFF, 0xFF, 0xFF, 0x54]),
-            Buffer.from('Source Engine Query\0', 'binary')
+            Buffer.from('Source Engine Query\0', 'ascii')
         ]);
 
         socket.on('message', (msg) => {
-            if (msg.length < 5) return;
-            const header = msg.readUInt8(4);
+            clearTimeout(timer);
+            socket.close();
 
-            if (header === 0x41) { 
-                // Ak server vyžaduje challenge token, pošleme ho naspäť s požiadavkou
-                const challenge = msg.slice(5, 9);
-                const challengePayload = Buffer.concat([
-                    Buffer.from([0xFF, 0xFF, 0xFF, 0xFF, 0x54]),
-                    Buffer.from('Source Engine Query\0', 'binary'),
-                    challenge
-                ]);
-                socket.send(challengePayload, port, host);
-            } else if (header === 0x49) { 
-                // Úspešná odpoveď (A2S_INFO response)
-                clearTimeout(timer);
-                socket.close();
+            try {
+                if (msg.length < 5) {
+                    return reject(new Error('Príliš krátka odpoveď zo servera (dĺžka < 5 bajtov)'));
+                }
 
-                try {
+                const header = msg.readUInt8(4);
+
+                // Ak server žiada challenge token (0x41)
+                if (header === 0x41) {
+                    return reject(new Error('Server vyžaduje challenge token (0x41)'));
+                }
+
+                // Ak je hlavička 0x49 (I - A2S_INFO Response)
+                if (header === 0x49) {
                     let offset = 5;
                     const protocol = msg.readUInt8(offset++);
 
-                    // Pomocná funkcia na čítanie null-terminated stringov
                     function readString() {
                         let end = offset;
                         while (end < msg.length && msg[end] !== 0) end++;
@@ -95,10 +93,12 @@ function querySourceServer(host, port, timeout = 4000) {
                     const map = readString();
                     const folder = readString();
                     const game = readString();
-                    const id = msg.readUInt16LE(offset); offset += 2;
+                    
+                    const id = msg.readUInt16LE(offset); 
+                    offset += 2;
+                    
                     const players = msg.readUInt8(offset++);
                     const maxplayers = msg.readUInt8(offset++);
-                    const bots = msg.readUInt8(offset++);
 
                     resolve({
                         name,
@@ -106,9 +106,11 @@ function querySourceServer(host, port, timeout = 4000) {
                         players,
                         maxplayers
                     });
-                } catch (e) {
-                    reject(e);
+                } else {
+                    reject(new Error(`Neznáma hlavička odpovede: 0x${header.toString(16)}`));
                 }
+            } catch (e) {
+                reject(new Error('Chyba pri parsovaní odpovede: ' + e.message));
             }
         });
 
@@ -171,7 +173,7 @@ async function updateServerStatus() {
     }
 }
 
-// HTTP Server pre Render / Railway health check
+// HTTP Server pre Railway / Render health check
 const port = process.env.PORT || 3000;
 const server = http.createServer((req, res) => {
     res.writeHead(200, { 'Content-Type': 'text/plain' });
