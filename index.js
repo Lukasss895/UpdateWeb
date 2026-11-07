@@ -19,6 +19,8 @@ const servers = [
     { name: 'GO:COUNTER Competitive (128-Tick)', host: '147.185.221.215', port: 40471 },
     { name: 'GO:COUNTER Retakes', host: '147.185.221.214', port: 33187 },
     { name: 'GO:COUNTER Wingman', host: '147.185.221.213', port: 6469 }
+    { name: 'Test Public Server', host: '155.138.232.189', port: 27015 }
+];
 ];
 
 client.once('ready', () => {
