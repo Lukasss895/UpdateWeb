@@ -1,5 +1,5 @@
 const { Client, GatewayIntentBits, EmbedBuilder } = require('discord.js');
-const { GameDig } = require('gamedig');
+const Gamedig = require('gamedig');
 const http = require('http');
 
 const client = new Client({
@@ -50,7 +50,7 @@ async function updateServerStatus() {
     for (const srv of servers) {
         let state = null;
         try {
-            state = await GameDig.query({
+            state = await Gamedig.query({
                 type: 'csgo',
                 host: srv.host,
                 port: srv.port,
