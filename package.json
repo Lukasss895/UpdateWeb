@@ -3,13 +3,13 @@
   "version": "1.0.0",
   "main": "index.js",
   "engines": {
-    "node": ">=20.0.0 <21.0.0"
+    "node": ">=20.0.0"
   },
   "scripts": {
     "start": "node index.js"
   },
   "dependencies": {
     "discord.js": "^14.14.1",
-    "gamedig": "latest"
+    "gamedig": "^4.0.7"
   }
 }
