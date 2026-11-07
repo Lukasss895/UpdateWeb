@@ -16,9 +16,10 @@ const WELCOME_CHANNEL_ID = '1539635519359549574';
 const WELCOME_CHANEL_ID2 = '1539662948157624320';
 
 const servers = [
-    { name: 'Test Public Server', host: '155.138.232.189', port: 27015 } // verejný testovací server
-];
-];
+    { name: 'GO:COUNTER Competitive (128-Tick)', host: '147.185.221.215', port: 40471 },
+    { name: 'GO:COUNTER Retakes', host: '147.185.221.214', port: 33187 },
+    { name: 'GO:COUNTER Wingman', host: '147.185.221.213', port: 6469 },
+    { name: 'Test Public Server', host: '155.138.232.189', port: 27015 } // Testovací server na overenie GameDig
 ];
 
 client.once('ready', () => {
@@ -51,7 +52,7 @@ async function updateServerStatus() {
         let state = null;
         try {
             state = await Gamedig.query({
-                type: 'csgo',
+                type: 'cs2', // Používame cs2 protokol pre moderné servery
                 host: srv.host,
                 port: srv.port,
                 maxAttempts: 3,
