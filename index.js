@@ -62,13 +62,11 @@ async function updateServerStatus() {
         }
 
         if (state) {
-            const playerCount = state.players ? state.players.length : (state.numplayers || 0);
-            const maxPlayers = state.maxplayers || 0;
-            const mapName = state.map || 'unknown';
+            const playerCount = state.raw && state.raw.numplayers !== undefined ? state.raw.numplayers : (state.players ? state.players.length : 0);
 
             description += `🟢 **${srv.name}**\n`;
-            description += `> **Map:** ${mapName}\n`;
-            description += `> **Players:** ${playerCount} / ${maxPlayers}\n`;
+            description += `> **Map:** ${state.map}\n`;
+            description += `> **Players:** ${playerCount} / ${state.maxplayers}\n`;
             description += `**IP:** \`connect ${srv.host}:${srv.port}\`\n\n`;
         } else {
             description += `🔴 **${srv.name}**\n`;
